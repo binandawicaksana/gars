@@ -1,0 +1,90 @@
+// app/page.js (Contoh Fetching Data)
+'use client';
+import * as React from 'react';
+import { Card, CardContent, Grid, Typography, CircularProgress, Alert, Box } from '@mui/material';
+import AdminLayout from './components/AdminLayout'; // Sesuaikan jalur impor
+
+export default function DashboardPage() {
+  const [data, setData] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // 1. Ambil Token (Gunakan cara penyimpanan yang AMAN, seperti Cookies HTTP-only)
+        const token = localStorage.getItem('auth_token'); 
+        
+        if (!token) {
+             // Jika token hilang, middleware seharusnya sudah mengarahkan ke login
+             throw new Error("Token otentikasi tidak ditemukan."); 
+        }
+
+        // 2. Kirim permintaan ke API PHP Anda
+        const response = await fetch('URL_API_PHP_DASHBOARD_STATS', {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Mengirim token
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Gagal mengambil data dari API.');
+        }
+
+        const result = await response.json();
+        setData(result.stats); // Asumsi API mengembalikan objek { stats: [...] }
+
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <Box display="flex" justifyContent="center" mt={5}>
+          <CircularProgress />
+        </Box>
+      </AdminLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminLayout>
+        <Alert severity="error">Error: {error}</Alert>
+      </AdminLayout>
+    );
+  }
+
+  // 3. Tampilkan data yang sudah dimuat
+  return (
+    <AdminLayout>
+      <Typography variant="h4" gutterBottom>
+        Dashboard Utama
+      </Typography>
+      <Grid container spacing={3}>
+        {/* Contoh Kartu yang menggunakan data dari state 'data' */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h5" component="div">
+                {data?.total_users || 'N/A'} 
+              </Typography>
+              <Typography color="text.secondary">
+                Pengguna Aktif
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        {/* Lanjutkan dengan data lain dari API Anda */}
+      </Grid>
+    </AdminLayout>
+  );
+}

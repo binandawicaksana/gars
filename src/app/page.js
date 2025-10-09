@@ -1,103 +1,58 @@
-import Image from "next/image";
+// app/page.js (Contoh Fetching Data)
+'use client';
+import * as React from 'react';
+import { Card, CardContent, Grid, Typography, CircularProgress, Alert, Box } from '@mui/material';
+import AdminLayout from './components/AdminLayout'; // Sesuaikan jalur impor
 
-export default function Home() {
+export default function DashboardPage() {
+  const [userFullname, setUserFullname] = React.useState('');
+ 
+  /**
+ * @returns {string | null}
+ */
+function getFullName() {
+  // 1. Ambil data JSON (dalam bentuk string) dari localStorage
+  const userDataString = localStorage.getItem('user_data');
+
+  if (!userDataString) {
+    return null; // Tidak ada data tersimpan
+  }
+
+  try {
+    // 2. Urai string JSON menjadi objek JavaScript
+    const userData = JSON.parse(userDataString);
+
+    // 3. Akses properti 'fullname'
+    // Asumsi: struktur data Anda langsung memiliki properti 'fullname'
+    if (userData && userData.fullname) {
+      return userData.fullname;
+    } else {
+      return null; // Properti fullname tidak ada
+    }
+  } catch (error) {
+    console.error("Gagal mengurai user_data dari localStorage:", error);
+    return null; // Gagal parsing (data rusak)
+  }
+}
+
+  
+
+  React.useEffect(() => {
+        // Karena localStorage hanya tersedia di sisi client (browser), 
+        // pastikan Anda memanggilnya di dalam useEffect atau di kondisi is client side.
+        const fullname = getFullName();
+        if (fullname) {
+            setUserFullname(fullname);
+        }
+    }, []);
+
+  // 3. Tampilkan data yang sudah dimuat
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <AdminLayout>
+      <Typography variant="h4" gutterBottom>
+        <p>Halo, Selamat Datang: <strong>{userFullname || 'Pengguna'}</strong></p>
+      </Typography>
+  
+    </AdminLayout>
   );
 }
