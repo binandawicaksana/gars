@@ -46,7 +46,8 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        console.log("posisition_code:",data.data.position_code);
+        console.log("position_code:",data.data.position_code);
+        console.log("Respon Data:",data);
         if (data.data.position_code==0||data.data.position_code==1){
         Cookies.set('auth_token', data.token, {
           expires: 7,
