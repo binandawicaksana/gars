@@ -2,7 +2,12 @@
 import { NextResponse } from 'next/server';
 
 // Daftar rute yang dilindungi (hanya bisa diakses setelah login)
-const protectedRoutes = ['/'];
+const protectedRoutes = [
+  '/',
+  '/admin',
+  '/warga', // ✅ Ditambahkan
+  '/satpam' // ✅ Ditambahkan
+];
 // Daftar rute publik (bisa diakses tanpa login)
 const publicRoutes = ['/login'];
 
@@ -35,5 +40,13 @@ export function middleware(request) {
 
 // Konfigurasi untuk memberitahu Middleware rute mana yang harus diperiksa
 export const config = {
-  matcher: ['/', '/login'], // Middleware akan berjalan pada rute-rute ini
+  // matcher: ['/', '/login'], // Middleware akan berjalan pada rute-rute ini
+ matcher: [
+    '/',               // Melindungi rute root (/)
+    '/admin/:path*',   // Melindungi /admin dan semua sub-rutenya
+    '/warga/:path*',   // ✅ Melindungi /warga dan semua sub-rutenya
+    '/satpam/:path*',  // ✅ Melindungi /satpam dan semua sub-rutenya
+    // Catatan: Jika Anda memiliki banyak rute di root yang dilindungi, 
+    // Anda bisa menggabungkannya ke dalam satu pola.
+  ],
 };

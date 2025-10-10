@@ -1,6 +1,6 @@
 // app/users/page.js
 'use client';
-import AdminLayout from '../components/AdminLayout';
+import AdminLayout from '../../components/AdminLayout';
 import {
   Typography,
   Paper,
@@ -16,7 +16,8 @@ import {
   Button
 } from '@mui/material';
 import * as React from 'react';
-// import { getUserData } from '../utils/user';
+import { API_BASE_URL } from '../../utils/constants';
+import { redirect } from 'next/navigation';
 
 
 export default function UsersPage() {
@@ -24,9 +25,17 @@ export default function UsersPage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
 
+  if (typeof window !== 'undefined') {
+    const storedCode = localStorage.getItem('position_code');
+    if (storedCode !== '99') { 
+      redirect('/'); 
+      // return null;
+    }
+  }
+
   React.useEffect(() => {
     const fetchData = async () => {
-      const url = '/api/v1/C_detailuser/get_detail_user';
+      const url = API_BASE_URL + '/C_detailuser/get_detail_user';
       const token = localStorage.getItem('auth_token');
 
       try {
@@ -34,6 +43,7 @@ export default function UsersPage() {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            // 'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': `Bearer ${token}`,
           },
         });

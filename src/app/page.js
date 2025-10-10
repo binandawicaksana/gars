@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Card, CardContent, Grid, Typography, CircularProgress, Alert, Box } from '@mui/material';
 import AdminLayout from './components/AdminLayout'; // Sesuaikan jalur impor
+import { redirect } from 'next/navigation';
 
 export default function DashboardPage() {
   const [userFullname, setUserFullname] = React.useState('');

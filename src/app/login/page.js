@@ -9,6 +9,8 @@ import Cookies from 'js-cookie';
 import Image from 'next/image';
 import PersonIcon from '@mui/icons-material/PersonOutline';
 import LockIcon from '@mui/icons-material/LockOutlined';
+import { API_BASE_URL } from '../utils/constants';
+import HomeImage from '../assets/images/home_image3.png'; 
 
 export default function LoginPage() {
   const [username, setUsername] = React.useState('');
@@ -32,7 +34,8 @@ export default function LoginPage() {
       username: username,
       password: hashedPassword
     }).toString();
-    const url = '/api/v1/C_user/login';
+    // const bodyData = `username=${username}&password=${hashedPassword}`;
+    const url = API_BASE_URL + '/C_user/login';
 
     try {
       const response = await fetch(url, {
@@ -42,13 +45,15 @@ export default function LoginPage() {
         },
         body: bodyData,
       });
+      console.log("bodyData:",bodyData);
+
 
       const data = await response.json();
 
       if (response.ok && data.success) {
         console.log("position_code:",data.data.position_code);
         console.log("Respon Data:",data);
-        if (data.data.position_code==0||data.data.position_code==1){
+        if (data.data.position_code==99||data.data.position_code==1){
         Cookies.set('auth_token', data.token, {
           expires: 7,
           secure: process.env.NODE_ENV === 'production',
@@ -58,6 +63,7 @@ export default function LoginPage() {
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('user_data', JSON.stringify(data.data)); 
         localStorage.setItem('id_resident', data.data.id_resident); 
+        localStorage.setItem('position_code', data.data.position_code); 
         console.log("id_resident:", data.data.id_resident);
         router.push('/');
         } else {
@@ -118,7 +124,8 @@ export default function LoginPage() {
           {/* Konten Gambar */}
           <Box>
             <Image
-              src="/images/home_image3.png"
+              // src="images/home_image3.png"
+              src={HomeImage.src} 
               alt="Logo GARS"
               width={500}
               height={500}

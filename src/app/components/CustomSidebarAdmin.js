@@ -10,14 +10,14 @@ import HomeImage from '../assets/images/home_image2.png';
 
 // Data menu navigasi
 const navItems = [
-  { text: 'Dashboard Warga', icon: <DashboardIcon />, href: '/' },
+  { text: 'Dashboard', icon: <DashboardIcon />, href: '/' },
   { text: 'Data Warga', icon: <PeopleAltIcon />, href: '/warga' },
   { text: 'Data Satpam', icon: <ShieldIcon />, href: '/satpam' },
-  // { text: 'Pengguna', icon: <PeopleIcon />, href: '/users' },
+  { text: 'Pengguna', icon: <PeopleIcon />, href: '/admin/users' },
   { text: 'Pengaturan', icon: <SettingsIcon />, href: '/settings' },
 ];
 
-export default function CustomSidebar({ drawerWidth, mobileOpen, handleDrawerToggle }) {
+export default function CustomSidebarAdmin({ drawerWidth, mobileOpen, handleDrawerToggle }) {
   const drawerContent = (
     <div>
       <Toolbar>
@@ -29,7 +29,7 @@ export default function CustomSidebar({ drawerWidth, mobileOpen, handleDrawerTog
             {/* 1. Tambahkan Tag Gambar */}
             {/* Pastikan 'logo-gars.png' ada di folder public Anda */}
             <img 
-                // src="/images/home_image.png" 
+                // src="images/home_image.png" 
                 src={HomeImage.src} 
                 alt="GARS Logo" 
                 style={{ 

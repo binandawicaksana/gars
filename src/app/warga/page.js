@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import * as React from "react";
 import { format } from 'date-fns';
+import { API_BASE_URL } from '../utils/constants';
 
 
 
@@ -63,12 +64,16 @@ export default function WargaPage() {
   const [residentStatusOptions, setresidentStatusOptions] = React.useState([]);
   const [loadingresidentStatus, setLoadingresidentStatus] = React.useState(true);
 
-  const [idResidentString, setidResidentString] = React.useState(null); 
+  const [idResidentString, setidResidentString] = React.useState(null);
   // const idResidentString = localStorage.getItem('id_resident');
 
   const [isCheckingEmail, setIsCheckingEmail] = React.useState(false);
   const [emailCheckStatus, setEmailCheckStatus] = React.useState(null); // null, 'available', 'unavailable'
   const [emailCheckMessage, setEmailCheckMessage] = React.useState('');
+  const [searchTerm, setSearchTerm] = React.useState('');
+
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  const [residentToDelete, setResidentToDelete] = React.useState({ id: null, fullname: '' });
 
 
   //TAMBAH DATA
@@ -87,8 +92,10 @@ export default function WargaPage() {
   // var idResidentString = "";
   const [openForm, setOpenForm] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [isEditMode, setIsEditMode] = React.useState(false);
 
   const initialFormData = {
+    id_resident:'',
     fullname: '',
     birth_date: '',
     nik_number: '',
@@ -114,9 +121,63 @@ export default function WargaPage() {
   };
 
   const isEmailCheckedAndAvailable = emailCheckStatus === 'available';
-  const disableSubmitButton = 
-    isSaving || 
-    !isEmailCheckedAndAvailable; 
+  const disableSubmitButton =
+    isSaving ||
+    !isEmailCheckedAndAvailable;
+
+  const handleOpenDeleteDialog = (idResident) => {
+    // ✅ 1. Cari objek resident berdasarkan ID
+    const resident = residentData.find(r => r.id_resident === idResident);
+
+    if (resident) {
+      // ✅ 2. Simpan ID dan Nama Lengkap ke state
+      setResidentToDelete({
+        id: resident.id_resident,
+        fullname: resident.fullname
+      });
+      setOpenDeleteDialog(true);
+    }
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    // ✅ Reset state
+    setResidentToDelete({ id: null, fullname: '' });
+  };
+
+
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  // ----------------------------------------------------
+  // ✅ LOGIKA FILTER DATA
+  // ----------------------------------------------------
+  const filteredResidents = React.useMemo(() => {
+    if (!searchTerm) {
+      return residentData; // Jika kosong, kembalikan semua data
+    }
+
+    const lowerCaseSearch = searchTerm.toLowerCase();
+
+    return residentData.filter(resident => {
+      // Gabungkan kolom yang ingin dicari (misalnya nama dan nomor telepon)
+      // Gunakan operator || (OR) untuk mencocokkan di salah satu kolom
+      return (
+        resident.fullname.toLowerCase().includes(lowerCaseSearch) ||
+        resident.phone_number.includes(lowerCaseSearch) ||
+        resident.email.toLowerCase().includes(lowerCaseSearch) ||
+        resident.residential_name.toLowerCase().includes(lowerCaseSearch) ||
+        resident.resident_status_name.toLowerCase().includes(lowerCaseSearch) || // Cari berdasarkan Nama Perumahan
+        resident.guest_status_name.toLowerCase().includes(lowerCaseSearch)  // Cari berdasarkan Nama Perumahan
+        // Cari berdasarkan Nama Perumahan
+
+      );
+    });
+  }, [residentData, searchTerm]);
+
+
   const handleCekData = () => {
     console.log('id_resident = ', idResidentString);
     console.log('getCurrentDateTimeFormatted = ', getCurrentDateTimeFormatted());
@@ -124,71 +185,102 @@ export default function WargaPage() {
 
   };
   const handleCheckEmail = async () => {
-        if (!formData.email) {
-            setEmailCheckStatus('error');
-            setEmailCheckMessage('Harap isi alamat Email terlebih dahulu.');
-            return;
-        }
+    if (!formData.email) {
+      setEmailCheckStatus('error');
+      setEmailCheckMessage('Harap isi alamat Email terlebih dahulu.');
+      return;
+    }
 
-        setIsCheckingEmail(true);
-        setEmailCheckStatus(null);
-        setEmailCheckMessage('');
-        
-        const url = '/api/v1/C_resident/check_email'; 
-        // const url = '/api/v1/C_resident/cek_email_resident'; 
+    setIsCheckingEmail(true);
+    setEmailCheckStatus(null);
+    setEmailCheckMessage('');
 
-        const token = localStorage.getItem('auth_token');
-        try {
-            const response = await fetch(url, {
-                method: 'POST', 
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ email: formData.email }),
-            });
-            console.log("BodyJSON", JSON.stringify({ email: formData.email }));
+    const url = API_BASE_URL + '/C_resident/check_email';
+    // const url = '/api/v1/C_resident/cek_email_resident'; 
+
+    const token = localStorage.getItem('auth_token');
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ email: formData.email }),
+      });
+      console.log("BodyJSON", JSON.stringify({ email: formData.email }));
 
 
-            const jsonResult = await response.json();
+      const jsonResult = await response.json();
 
-            if (response.ok && jsonResult.success) {
-                // Email belum terdaftar (Backend harus mengembalikan success: true jika available)
-                setEmailCheckStatus('available');
-                setEmailCheckMessage('✅ Email tersedia dan dapat digunakan.');
-                // handleAddResident();
-            } else {
-                // Email sudah terdaftar (Backend harus mengembalikan success: false jika unavailable)
-                setEmailCheckStatus('unavailable');
-                setEmailCheckMessage(jsonResult.message || '❌ Email sudah terdaftar. Gunakan Email lain.');
-            }
-        } catch (e) {
-            setEmailCheckStatus('error');
-            setEmailCheckMessage('Koneksi gagal saat cek email. Coba lagi.');
-            console.log(e);
-            // setEmailCheckMessage(e);
+      if (response.ok && jsonResult.success) {
+        // Email belum terdaftar (Backend harus mengembalikan success: true jika available)
+        setEmailCheckStatus('available');
+        setEmailCheckMessage('✅ Email tersedia dan dapat digunakan.');
+        // handleAddResident();
+      } else {
+        // Email sudah terdaftar (Backend harus mengembalikan success: false jika unavailable)
+        setEmailCheckStatus('unavailable');
+        setEmailCheckMessage(jsonResult.message || '❌ Email sudah terdaftar. Gunakan Email lain.');
+      }
+    } catch (e) {
+      setEmailCheckStatus('error');
+      setEmailCheckMessage('Koneksi gagal saat cek email. Coba lagi.');
+      console.log(e);
+      // setEmailCheckMessage(e);
 
-        } finally {
-            setIsCheckingEmail(false);
-        }
-    };
+    } finally {
+      setIsCheckingEmail(false);
+    }
+  };
   const [formData, setFormData] = React.useState(initialFormData);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     console.log("handleInputChange", e.target);
-    
+  };
 
+  const handleOpenEditForm = (idResident) => {
+    // 1. Cari data resident yang ingin di edit
+    const residentToEdit = residentData.find(r => r.id_resident === idResident);
+
+    if (residentToEdit) {
+      // 2. Atur form data dengan data resident yang ada
+      setFormData({
+        // Copy semua properti residentToEdit
+        ...residentToEdit,
+        // Pastikan format tanggal sesuai untuk input type="date"
+        birth_date: residentToEdit.birth_date ? residentToEdit.birth_date.split(' ')[0] : '',
+        // Set created_by ke nilai awal atau ID resident yang ada (jika digunakan)
+        created_by: residentToEdit.created_by, // Pertahankan created_by asli
+        // updated_by: localStorage.getItem('id_resident'), // Set updater
+        // updated_date: getCurrentDateTimeFormatted(), // Set waktu update
+        
+
+      });
+      console.log('setFormData residentToEdit', residentToEdit);
+
+      // 3. Atur state ke mode Edit
+      setIsEditMode(true);
+      setEmailCheckStatus('available'); // Email dianggap OK karena sudah terdaftar
+      setEmailCheckMessage('✅ Email sudah terdaftar.');
+      setOpenForm(true);
+    } else {
+      setError('Data resident yang ingin di edit tidak ditemukan.');
+    }
   };
   const handleOpenForm = () => {
     setOpenForm(true)
+    setIsEditMode(false); // Pastikan mode Add
+    setFormData(initialFormData); // Reset form
     setEmailCheckStatus('');
-     setEmailCheckMessage('');
+    setEmailCheckMessage('');
   };
   const handleCloseForm = () => {
     setOpenForm(false);
     setFormData(initialFormData);
+    setIsEditMode(false); // Reset mode Edit
     setError(null);
   };
   const handleAddResident = async (e) => {
@@ -197,20 +289,102 @@ export default function WargaPage() {
     setError(null);
 
     // Asumsi: Endpoint API CodeIgniter Anda untuk menambah data resident
-    const url = '/api/v1/C_resident/insert_resident';
+    const url = API_BASE_URL + '/C_resident/insert_resident';
     const token = localStorage.getItem('auth_token');
-     const createdByValue  = localStorage.getItem('id_resident');
+    const createdByValue = localStorage.getItem('id_resident');
+    const userDataString = JSON.parse(localStorage.getItem('user_data'));
+    const residentialIdString = userDataString.residential_id;
+    const rtString = userDataString.rt;
+    const rwString = userDataString.rw;
+
+
 
     // handleCheckEmail();
     const dataToSend = {
-        ...formData, // Semua data dari form
-        created_by: createdByValue,
+      ...formData, // Semua data dari form
+      residential_id: residentialIdString,
+      rt: rtString,
+      rw: rwString,
+      created_by: createdByValue,
     };
 
-    if(emailCheckStatus=='available'){
+    if (emailCheckStatus == 'available') {
       try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(dataToSend),
+        });
+
+        const jsonResult = await response.json();
+
+        if (response.ok && jsonResult.success) {
+          handleCloseForm();
+          window.location.reload();
+        } else {
+          setError(jsonResult.message || 'Gagal menambahkan data resident.');
+        }
+      } catch (e) {
+        setError('Koneksi gagal atau terjadi kesalahan jaringan saat menambah data.');
+      } finally {
+        setIsSaving(false);
+      }
+    }
+
+  };
+  const handleSubmitForm = async (e) => { // ✅ Ganti nama fungsi
+    e.preventDefault();
+    setIsSaving(true);
+    setError(null);
+
+    const token = localStorage.getItem('auth_token');
+    const operatorId = localStorage.getItem('id_resident');
+    const userDataString = JSON.parse(localStorage.getItem('user_data'));
+
+    let url;
+    let dataToSend;
+
+    // 1. Tentukan URL dan data berdasarkan mode (Tambah atau Edit)
+    if (isEditMode) {
+      // Mode Edit (Update)
+      url = API_BASE_URL + '/C_resident/update_resident2';
+      dataToSend = {
+        ...formData,
+        // updated_by: operatorId, // Pastikan ada field updated_by di API
+        // updated_date: getCurrentDateTimeFormatted(),
+      };
+      // Hapus properti created_by jika API Anda tidak membutuhkannya di mode update
+      delete dataToSend.created_by;
+      delete dataToSend.created_date;
+      console.log('dataToSend',dataToSend);
+
+    } else {
+      // Mode Tambah (Insert)
+      url = API_BASE_URL + '/C_resident/insert_resident';
+      dataToSend = {
+        ...formData,
+        residential_id: userDataString.residential_id,
+        rt: userDataString.rt,
+        rw: userDataString.rw,
+        created_by: operatorId,
+        created_date: getCurrentDateTimeFormatted(),
+      };
+    }
+
+    // 2. Verifikasi Email (hanya wajib saat INSERT)
+    if (!isEditMode && emailCheckStatus !== 'available') {
+      setIsSaving(false);
+      setError('Harap cek dan pastikan Email tersedia sebelum menyimpan data.');
+      return;
+    }
+
+    // 3. Kirim Permintaan API
+    try {
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'POST', // Gunakan POST untuk insert/update CodeIgniter
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -222,17 +396,75 @@ export default function WargaPage() {
 
       if (response.ok && jsonResult.success) {
         handleCloseForm();
-        window.location.reload();
+        window.location.reload(); // Refresh data
       } else {
-        setError(jsonResult.message || 'Gagal menambahkan data resident.');
+        setError(jsonResult.message || `Gagal ${isEditMode ? 'memperbarui' : 'menambahkan'} data resident.`);
       }
     } catch (e) {
-      setError('Koneksi gagal atau terjadi kesalahan jaringan saat menambah data.');
+      setError('Koneksi gagal atau terjadi kesalahan jaringan saat menyimpan data.');
+      console.log("Error SIMPAN/EDIT", e)
     } finally {
       setIsSaving(false);
     }
+  };
+  const handleDeleteResident = async () => {
+    if (!residentToDelete) return;
+
+    setIsSaving(true); // Gunakan state isSaving yang sudah ada
+    setError(null);
+
+    // Asumsi: Endpoint API CodeIgniter Anda untuk menghapus data resident
+    // Gunakan id_resident sebagai parameter di URL atau di body, 
+    // di sini kita gunakan format URL umum untuk DELETE.
+    const url = `${API_BASE_URL}/C_resident/delete_resident`;
+    const token = localStorage.getItem('auth_token');
+
+    const dataToSend = {
+      id_resident: residentToDelete,
+    };
+    const bodyData = new URLSearchParams({
+      id_resident: residentToDelete,
+    }).toString();
+    console.log("bodyData", bodyData)
+    console.log("token", token)
+
+
+
+    try {
+      // const response = await fetch(url, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${token}`,
+      //   },
+      //   body: JSON.stringify(dataToSend),
+      // });
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: bodyData,
+      });
+
+
+      const jsonResult = await response.json();
+
+      if (response.ok && jsonResult.success) {
+        // Berhasil dihapus, tutup dialog dan muat ulang data
+        handleCloseDeleteDialog();
+        window.location.reload(); // Atau panggil fetchData() lagi untuk refresh data
+      } else {
+        // Gagal hapus
+        setError(jsonResult.message || 'Gagal menghapus data resident.');
+      }
+    } catch (e) {
+      setError('Koneksi gagal atau terjadi kesalahan jaringan saat menghapus data. ' + e);
+      console.log("Error Delete", e)
+    } finally {
+      setIsSaving(false);
     }
-    
   };
   // TAMBAH DATA FUNGSI SAMPAI SINI
 
@@ -241,7 +473,7 @@ export default function WargaPage() {
 
   React.useEffect(() => {
     const fetchData = async () => {
-      const url = '/api/v1/C_resident/get_resident';
+      const url = API_BASE_URL + '/C_resident/get_resident';
       const token = localStorage.getItem('auth_token');
       try {
         const response = await fetch(url, {
@@ -267,13 +499,13 @@ export default function WargaPage() {
     const fetchResidentialIdOptions = async () => {
       const token = localStorage.getItem('auth_token');
       // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = '/api/v1/C_optiondata/get_residential';
+      const url = API_BASE_URL + '/C_optiondata/get_residential';
 
       try {
         const response = await fetch(url, {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
           },
         });
@@ -294,7 +526,9 @@ export default function WargaPage() {
     const fetchGenderOptions = async () => {
       const token = localStorage.getItem('auth_token');
       // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = '/api/v1/C_optiondata/get_gender';
+      // const url = API_BASE_URL + '/C_optiondata/get_gender';
+      const url = 'http://192.168.56.1/firegars/C_optiondata/get_gender';
+      // console.log('url', url);
 
       try {
         const response = await fetch(url, {
@@ -321,7 +555,7 @@ export default function WargaPage() {
     const fetchMaritalStatusOptions = async () => {
       const token = localStorage.getItem('auth_token');
       // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = '/api/v1/C_optiondata/get_marital_status';
+      const url = API_BASE_URL + '/C_optiondata/get_marital_status';
 
       try {
         const response = await fetch(url, {
@@ -348,7 +582,7 @@ export default function WargaPage() {
     const fetchReligionOptions = async () => {
       const token = localStorage.getItem('auth_token');
       // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = '/api/v1/C_optiondata/get_religion';
+      const url = API_BASE_URL + '/C_optiondata/get_religion';
 
       try {
         const response = await fetch(url, {
@@ -375,7 +609,7 @@ export default function WargaPage() {
     const fetchLastEducationOptions = async () => {
       const token = localStorage.getItem('auth_token');
       // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = '/api/v1/C_optiondata/get_last_education';
+      const url = API_BASE_URL + '/C_optiondata/get_last_education';
 
       try {
         const response = await fetch(url, {
@@ -402,7 +636,7 @@ export default function WargaPage() {
     const fetchOccupationOptions = async () => {
       const token = localStorage.getItem('auth_token');
       // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = '/api/v1/C_optiondata/get_occupation';
+      const url = API_BASE_URL + '/C_optiondata/get_occupation';
 
       try {
         const response = await fetch(url, {
@@ -429,7 +663,7 @@ export default function WargaPage() {
     const fetchResidentStatusOptions = async () => {
       const token = localStorage.getItem('auth_token');
       // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = '/api/v1/C_optiondata/get_resident_status';
+      const url = API_BASE_URL + '/C_optiondata/get_resident_status';
 
       try {
         const response = await fetch(url, {
@@ -492,8 +726,31 @@ export default function WargaPage() {
         Manajemen Data Resident
       </Typography>
       <Paper elevation={3} sx={{ p: 3 }}>
-        <Button size="small" variant="outlined" color="success" onClick={handleOpenForm}>Tambah Data</Button>
 
+        <Box display="flex" alignItems="center" mb={2}>
+
+          {/* Input Pencarian (Tinggal di sebelah kiri) */}
+          <TextField
+            label="Cari Data"
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            sx={{ width: 300 }}
+          />
+
+          {/* Tombol Tambah Data (Didorong ke kanan dengan ml: 'auto') */}
+          <Button
+            size="small"
+            variant="outlined"
+            color="success"
+            onClick={handleOpenForm}
+            sx={{ ml: 'auto' }} // <-- PENTING: Mendorong tombol ke margin kanan
+          >
+            Tambah Data
+          </Button>
+
+        </Box>
         <TableContainer component={Paper} sx={{ mt: 3 }}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
@@ -510,7 +767,8 @@ export default function WargaPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {residentData.map((user, index) => (
+              {/* {residentData.map((user, index) => ( */}
+              {filteredResidents.map((user, index) => (
                 <TableRow
                   key={user.id_resident}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -524,8 +782,24 @@ export default function WargaPage() {
                   <TableCell>{user.guest_status_name}</TableCell>
 
                   <TableCell>
-                    <Button size="small" variant="outlined" sx={{ mr: 1 }}>Edit</Button>
-                    <Button size="small" variant="outlined" color="error">Hapus</Button>
+                    {/* <Button size="small" variant="outlined" sx={{ mr: 1 }}>Edit</Button> */}
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      sx={{ mr: 1 }}
+                      onClick={() => handleOpenEditForm(user.id_resident)}
+                    >
+                      Edit
+                    </Button>
+                    {/* <Button size="small" variant="outlined" color="error">Hapus</Button> */}
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleOpenDeleteDialog(user.id_resident)}
+                    >
+                      Hapus
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -537,10 +811,19 @@ export default function WargaPage() {
         {/* ✅ DIALOG FORM INPUT DATA RESIDENT */}
         {/* ----------------------------------- */}
         <Dialog open={openForm} onClose={handleCloseForm} fullWidth maxWidth="md">
-          <DialogTitle sx={{ bgcolor: '#394e77', color: 'white', padding: 2 }}>
+          {/* <DialogTitle sx={{ bgcolor: '#394e77', color: 'white', padding: 2 }}>
             Input Data Resident Baru
           </DialogTitle>
-          <Box component="form" onSubmit={handleAddResident}>
+          <Box component="form" onSubmit={handleAddResident}> */}
+          {/** UPDATE DIALOG MENJADI EDIT */}
+
+          <DialogTitle sx={{ bgcolor: '#394e77', color: 'white', padding: 2 }}>
+            {/* ✅ Ganti Title */}
+            {isEditMode ? 'Edit Data Resident' : 'Input Data Resident Baru'}
+          </DialogTitle>
+          <Box component="form" onSubmit={handleSubmitForm}>
+
+
             <DialogContent dividers> {/* dividers: memberikan garis pemisah */}
               {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
@@ -617,7 +900,7 @@ export default function WargaPage() {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
                     <TextField
                       margin="none"
-                      sx={{width: lebartextbox,}}
+                      sx={{ width: lebartextbox, }}
                       size="small"
                       label="Email"
                       name="email"
@@ -659,9 +942,9 @@ export default function WargaPage() {
               <Grid container spacing={3}>
 
                 {/* Baris 3: ID Perumahan, No. Rumah, Total Keluarga */}
-                <Grid item xs={12} sm={4}>
-                  {/* <TextField margin="none" sx={{width: lebartextbox,}} size="small" label="ID Perumahan" name="residential_id" value={formData.residential_id} onChange={handleInputChange} required /> */}
-                  <TextField
+                {/* <Grid item xs={12} sm={4}> */}
+                {/* <TextField margin="none" sx={{width: lebartextbox,}} size="small" label="ID Perumahan" name="residential_id" value={formData.residential_id} onChange={handleInputChange} required /> */}
+                {/* <TextField
                     select
                     margin="none"
                     sx={{ width: lebartextbox, }}
@@ -693,8 +976,8 @@ export default function WargaPage() {
                         {option.residential_name}
                       </MenuItem>
                     ))}
-                  </TextField>
-                </Grid>
+                  </TextField> */}
+                {/* </Grid> */}
                 <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{ width: lebartextbox, }} size="small" label="Nomor Rumah" name="house_number" value={formData.house_number} onChange={handleInputChange} required />
                 </Grid>
@@ -703,12 +986,12 @@ export default function WargaPage() {
                 </Grid>
 
                 {/* Baris 4: RT, RW */}
-                <Grid item xs={12} sm={4}>
+                {/* <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{ width: lebartextbox, }} size="small" label="RT" name="rt" value={formData.rt} onChange={handleInputChange} required />
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{ width: lebartextbox, }} size="small" label="RW" name="rw" value={formData.rw} onChange={handleInputChange} required />
-                </Grid>
+                </Grid> */}
               </Grid>
 
               <Divider sx={{ my: 3 }} />
@@ -908,19 +1191,61 @@ export default function WargaPage() {
 
               </Grid>
             </DialogContent>
+            {/* <DialogActions sx={{ padding: 2 }}> */}
+            {/* <Button onClick={handleCekData} color="warning" variant="outlined" disabled={isSaving}>Cek Data</Button> */}
+            {/* <Button onClick={handleCloseForm} color="error" variant="outlined" disabled={isSaving}>Batal</Button> */}
+            {/* <Button type="submit" variant="contained" color="success" disabled={disableSubmitButton}> */}
+            {/* {isSaving ? 'Menyimpan...' : 'Simpan Data'} */}
+            {/* </Button> */}
+            {/* </DialogActions> */}
+
             <DialogActions sx={{ padding: 2 }}>
-              <Button onClick={handleCekData} color="warning" variant="outlined" disabled={isSaving}>Cek Data</Button>
               <Button onClick={handleCloseForm} color="error" variant="outlined" disabled={isSaving}>Batal</Button>
               <Button type="submit" variant="contained" color="success" disabled={disableSubmitButton}>
-                {isSaving ? 'Menyimpan...' : 'Simpan Data'}
+                {/* ✅ Ganti Label Tombol */}
+                {isSaving ? 'Menyimpan...' : (isEditMode ? 'Simpan Perubahan' : 'Simpan Data')}
               </Button>
             </DialogActions>
           </Box>
         </Dialog>
       </Paper>
 
+      {/* ----------------------------------- */}
+      {/* ✅ DIALOG KONFIRMASI HAPUS DATA */}
+      {/* ----------------------------------- */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle sx={{ bgcolor: 'error.main', color: 'white' }}>
+          Konfirmasi Penghapusan
+        </DialogTitle>
+        <DialogContent sx={{ pt: 2, mt: 2 }}>
+          <Typography>
+            Anda yakin ingin menghapus data Resident atas nama: <strong>{residentToDelete.fullname}</strong>?
+          </Typography>
+          <Typography color="error" sx={{ mt: 1 }}>
+            Aksi ini tidak dapat dibatalkan.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseDeleteDialog}
+            color="primary"
+            disabled={isSaving}
+          >
+            Batal
+          </Button>
+          <Button
+            onClick={handleDeleteResident}
+            color="error"
+            variant="contained"
+            disabled={isSaving}
+          >
+            {isSaving ? 'Menghapus...' : 'Hapus Data'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
 
-    </AdminLayout>
+
+    </AdminLayout >
   );
 }

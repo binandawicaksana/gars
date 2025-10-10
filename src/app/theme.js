@@ -5,6 +5,7 @@ const theme = createTheme({
   typography: {
     // 💡 Gunakan variable CSS yang telah didefinisikan di layout.js
     fontFamily: 'var(--font-poppins), Arial, sans-serif', 
+    fontSize: 12, 
   },
   palette: {
     primary: {

@@ -6,28 +6,37 @@ const nextConfig = {
   //   images: {
   //   unoptimized: true,
   // },
+  // experimental: {
+  //   allowedDevOrigins: ['http://192.168.56.1:3000'],
+  // },
+  compiler: {
+    // Menghapus console.log hanya di lingkungan production
+    // Di Vercel, ini akan aktif secara otomatis pada build.
+    // Anda bisa menargetkan jenis console tertentu. Contoh: true (menghapus semua console.*)
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
 
     
     // ✅ Tambahkan fungsi async rewrites()
-    async rewrites() {
-        return [
-          {
-            // source: Path yang akan digunakan di frontend (Next.js)
-            // Kami akan menggunakan /api/v1/ untuk endpoint
-            source: '/api/v1/:path*',
+    // async rewrites() {
+    //     return [
+    //       {
+    //         // source: Path yang akan digunakan di frontend (Next.js)
+    //         // Kami akan menggunakan /api/v1/ untuk endpoint
+    //         source: '/api/v1/:path*',
             
-            // destination: URL API CodeIgniter Anda yang sebenarnya
-            // :path* memastikan sisa URL diteruskan ke CodeIgniter
-            // Contoh: /api/v1/C_detailuser/get_detail_user 
-            //         akan menuju http://192.168.56.1/firegars/C_detailuser/get_detail_user
-             //localhost
-            // destination: 'http://192.168.56.1/firegars/:path*',
-            //hosting
-           destination: 'https://soratenteknologi.my.id/firegars/:path*', 
+    //         // destination: URL API CodeIgniter Anda yang sebenarnya
+    //         // :path* memastikan sisa URL diteruskan ke CodeIgniter
+    //         // Contoh: /api/v1/C_detailuser/get_detail_user 
+    //         //         akan menuju http://192.168.56.1/firegars/C_detailuser/get_detail_user
+    //          //localhost
+    //         destination: 'http://192.168.56.1/firegars/:path*',
+    //         //hosting
+    //       //  destination: 'https://soratenteknologi.my.id/firegars/:path*', 
 
-          },
-        ];
-    },
+    //       },
+    //     ];
+    // },
 };
 
 export default nextConfig;
