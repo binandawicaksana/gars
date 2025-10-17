@@ -189,7 +189,7 @@ export default function DashboardPage() {
     const fetchToken = async () => {
       const token = localStorage.getItem('auth_token');
       // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = API_BASE_URL + '/dashboard';
+      const url = API_BASE_URL + '/C_dashboard';
       // console.error("response", url);
       // console.error("token", token);
       try {
@@ -217,10 +217,14 @@ export default function DashboardPage() {
 
     fetchToken();
     fetchResidentialIdOptions();
+    // console.error("residentialIdString", residentialIdString);
+
     if (residentialIdString!=0){
       fetchHistoryScan(residentialIdString);
       setresidentialCombobox(false);
     }
+    // console.error("residentialCombobox", residentialCombobox);
+    
   }, []);
 
   // 3. Tampilkan data yang sudah dimuat
@@ -233,9 +237,14 @@ export default function DashboardPage() {
          <Typography variant="h6" gutterBottom mb={2}>
         <p>Data Tamu yang telah di scan</p>
       </Typography>
+      <Typography variant="h6" gutterBottom mb={2}>
+        {residentialCombobox}
+      </Typography>
         <Box display="flex" alignItems="center" mb={2}>
+          
+          {residentialCombobox &&
           <Grid item xs={12} sm={4}>
-            {residentialCombobox &&
+            
             <TextField
               select
               margin="none"
@@ -270,9 +279,9 @@ export default function DashboardPage() {
                 </MenuItem>
               ))}
             </TextField>
-            }
             
-          </Grid>
+            
+          </Grid>}
 
         </Box>
         <TableContainer component={Paper} sx={{ mt: 3 }}>

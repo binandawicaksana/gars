@@ -21,7 +21,7 @@ const navItems = [
   { text: 'Data Warga', icon: <Groups3Icon />, href: '/warga' },
   { text: 'Data Satpam', icon: <AdminPanelSettingsIcon />, href: '/admin/satpam' },
   { text: 'Data Pengguna', icon: <LockPersonIcon />, href: '/admin/users' },
-  { text: 'Pengaturan', icon: <SettingsIcon />, href: '/settings' },
+  // { text: 'Pengaturan', icon: <SettingsIcon />, href: '/settings' },
 ];
 
 export default function CustomSidebarAdmin({ drawerWidth, mobileOpen, handleDrawerToggle }) {

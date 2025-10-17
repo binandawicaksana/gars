@@ -88,7 +88,7 @@ export default function UsersPage() {
         Manajemen Data Pengguna
       </Typography>
       <Paper elevation={3} sx={{ p: 3 }}>
-        <Button size="small" variant="outlined" color="success">Tambah Data</Button>
+        {/* <Button size="small" variant="outlined" color="success">Tambah Data</Button> */}
 
         <TableContainer component={Paper} sx={{ mt: 3 }}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -96,8 +96,14 @@ export default function UsersPage() {
               <TableRow>
                 <TableCell sx={{ fontWeight: 'bold' }}>ID User</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>Username</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>ID Resident</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Aksi</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Nama</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>No.Telp.</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>No.Rumah</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Nama Perumahan</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Alamat.</TableCell>
+
+
+
               </TableRow>
             </TableHead>
             <TableBody>
@@ -110,10 +116,14 @@ export default function UsersPage() {
                     {user.id_user}
                   </TableCell>
                   <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.id_resident}</TableCell>
+                  <TableCell>{user.fullname}</TableCell>
+                  <TableCell>{user.phone_number}</TableCell>
+                  <TableCell>{user.house_number}</TableCell>
+                  <TableCell>{user.residential_name}</TableCell>
+                  <TableCell>{user.address}</TableCell>
                   <TableCell>
-                    <Button size="small" variant="outlined" sx={{ mr: 1 }}>Edit</Button>
-                    <Button size="small" variant="outlined" color="error">Hapus</Button>
+                    {/* <Button size="small" variant="outlined" sx={{ mr: 1 }}>Edit</Button>
+                    <Button size="small" variant="outlined" color="error">Hapus</Button> */}
                   </TableCell>
                 </TableRow>
               ))}

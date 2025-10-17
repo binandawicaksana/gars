@@ -11,6 +11,7 @@ import PersonIcon from '@mui/icons-material/PersonOutline';
 import LockIcon from '@mui/icons-material/LockOutlined';
 import { API_BASE_URL } from '../utils/constants';
 import HomeImage from '../assets/images/home_image3.png'; 
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [username, setUsername] = React.useState('');
@@ -237,6 +238,15 @@ export default function LoginPage() {
               >
                 {loading ? 'Memuat...' : 'Masuk'}
               </Button>
+              <Typography variant="body2" align="center" sx={{ mt: 0 }}>
+               <Link 
+                   href="/changepass" // ⬅️ Arahkan ke halaman ganti password yang baru dibuat
+                   passHref // Wajib untuk link Next.js yang dibungkus di MUI
+                   style={{ textDecoration: 'none', color: '#395886' }} // Hapus garis bawah default
+               >
+                   Ganti Password?
+               </Link>
+           </Typography>
             </Box>
           </Box>
         </Grid>

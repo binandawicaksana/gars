@@ -291,9 +291,6 @@ export default function ResidentialPage() {
     }).toString();
     console.log("bodyData", bodyData)
     console.log("token", token)
-
-
-
     try {
       const response = await fetch(url, {
         method: 'POST',
