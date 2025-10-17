@@ -68,7 +68,7 @@ export default function ResidentialPage() {
   const [openForm, setOpenForm] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const [formData, setFormData] = React.useState(initialFormData);
+  
 
   const initialFormData = {
     residential_id: '',
@@ -83,6 +83,7 @@ export default function ResidentialPage() {
     province_code: '',
     // province_name: '',
   };
+  const [formData, setFormData] = React.useState(initialFormData);
   const disableSubmitButton =
     isSaving
 
@@ -581,6 +582,8 @@ export default function ResidentialPage() {
             </TableBody>
           </Table>
         </TableContainer>
+      </Paper>
+
 
         {/* ----------------------------------- */}
         {/* ✅ DIALOG FORM INPUT DATA RESIDENT */}
@@ -757,7 +760,6 @@ export default function ResidentialPage() {
             </DialogActions>
           </Box>
         </Dialog>
-      </Paper>
 
       {/* ----------------------------------- */}
       {/* ✅ DIALOG KONFIRMASI HAPUS DATA */}
