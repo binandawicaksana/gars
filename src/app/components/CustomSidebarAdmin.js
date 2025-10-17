@@ -5,15 +5,22 @@ import PeopleIcon from '@mui/icons-material/People';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ShieldIcon from '@mui/icons-material/Shield';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import Groups3Icon from '@mui/icons-material/Groups3';
+import Person4Icon from '@mui/icons-material/Person4';
+import LockPersonIcon from '@mui/icons-material/LockPerson';
+import AddHomeWorkIcon from '@mui/icons-material/AddHomeWork';
 import Link from 'next/link';
 import HomeImage from '../assets/images/home_image2.png'; 
 
 // Data menu navigasi
 const navItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, href: '/' },
-  { text: 'Data Warga', icon: <PeopleAltIcon />, href: '/warga' },
-  { text: 'Data Satpam', icon: <ShieldIcon />, href: '/satpam' },
-  { text: 'Pengguna', icon: <PeopleIcon />, href: '/admin/users' },
+  { text: 'Data Perumahan', icon: <AddHomeWorkIcon />, href: '/admin/residential' },
+  { text: 'Data RT', icon: <Person4Icon />, href: '/admin/rt' },
+  { text: 'Data Warga', icon: <Groups3Icon />, href: '/warga' },
+  { text: 'Data Satpam', icon: <AdminPanelSettingsIcon />, href: '/admin/satpam' },
+  { text: 'Data Pengguna', icon: <LockPersonIcon />, href: '/admin/users' },
   { text: 'Pengaturan', icon: <SettingsIcon />, href: '/settings' },
 ];
 

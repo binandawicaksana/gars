@@ -41,7 +41,7 @@ export default function AdminLayout({ children }) {
       // Pastikan positioncode adalah nilai yang ingin Anda simpan, misalnya '99'
       setUserPosition(positioncode); 
       // ✅ Log variabel lokal yang nilainya sudah pasti terbaru
-      console.log('Position Code from storage:', positioncode); 
+      // console.log('Position Code from storage:', positioncode); 
     }
       }, []);
 

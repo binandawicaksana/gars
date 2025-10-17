@@ -95,7 +95,7 @@ export default function WargaPage() {
   const [isEditMode, setIsEditMode] = React.useState(false);
 
   const initialFormData = {
-    id_resident:'',
+    id_resident: '',
     fullname: '',
     birth_date: '',
     nik_number: '',
@@ -256,7 +256,7 @@ export default function WargaPage() {
         created_by: residentToEdit.created_by, // Pertahankan created_by asli
         // updated_by: localStorage.getItem('id_resident'), // Set updater
         // updated_date: getCurrentDateTimeFormatted(), // Set waktu update
-        
+
 
       });
       console.log('setFormData residentToEdit', residentToEdit);
@@ -359,7 +359,7 @@ export default function WargaPage() {
       // Hapus properti created_by jika API Anda tidak membutuhkannya di mode update
       delete dataToSend.created_by;
       delete dataToSend.created_date;
-      console.log('dataToSend',dataToSend);
+      console.log('dataToSend', dataToSend);
 
     } else {
       // Mode Tambah (Insert)
@@ -423,8 +423,9 @@ export default function WargaPage() {
       id_resident: residentToDelete,
     };
     const bodyData = new URLSearchParams({
-      id_resident: residentToDelete,
+      id_resident: residentToDelete.id,
     }).toString();
+    console.log("residentToDelete", residentToDelete.id)
     console.log("bodyData", bodyData)
     console.log("token", token)
 
@@ -450,6 +451,8 @@ export default function WargaPage() {
 
 
       const jsonResult = await response.json();
+      console.log("jsonResult", jsonResult);
+
 
       if (response.ok && jsonResult.success) {
         // Berhasil dihapus, tutup dialog dan muat ulang data
@@ -473,15 +476,34 @@ export default function WargaPage() {
 
   React.useEffect(() => {
     const fetchData = async () => {
-      const url = API_BASE_URL + '/C_resident/get_resident';
       const token = localStorage.getItem('auth_token');
+      const positioncode = localStorage.getItem('position_code');
+      const residential_id = localStorage.getItem('position_code');
+      const rtdata = localStorage.getItem('rt');
+      const rwdata = localStorage.getItem('rw');
+      let url;
+
+      if (positioncode === '99') {
+        url = API_BASE_URL + '/C_resident/get_resident';
+      } else {
+        url = API_BASE_URL + '/C_resident/get_resident_rt';
+      }
       try {
+        const bodyData = new URLSearchParams({
+          residential_id: residential_id,
+          rt: rtdata,
+          rw: rwdata
+        }).toString();
+        console.log('URL', url);
+        console.log('bodyData', bodyData);
         const response = await fetch(url, {
-          method: 'GET',
+          method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': `Bearer ${token}`,
           },
+          body: bodyData,
+          //  body: JSON.stringify({ residential_id: residential_id,  rt: rtdata,  rw: rwdata}),
         });
         const jsonResult = await response.json();
         if (response.ok && jsonResult.success) {
@@ -687,9 +709,6 @@ export default function WargaPage() {
         setLoadingresidentStatus(false);
       }
     };
-
-
-
     fetchData();
     fetchResidentialIdOptions();
     fetchGenderOptions();
@@ -906,6 +925,7 @@ export default function WargaPage() {
                       name="email"
                       type="email"
                       value={formData.email}
+                      disabled={isEditMode}
                       onChange={handleInputChange}
                       // Tampilkan warna/status berdasarkan hasil pengecekan
                       error={emailCheckStatus === 'unavailable' || emailCheckStatus === 'error'}
@@ -914,7 +934,7 @@ export default function WargaPage() {
                     <Button
                       variant="outlined"
                       onClick={handleCheckEmail}
-                      disabled={isCheckingEmail || !formData.email}
+                      disabled={isCheckingEmail || !formData.email || isEditMode}
                       size="small"
                       sx={{ height: '40px', minWidth: '80px' }} // Atur tinggi agar sejajar dengan TextField
                     >
@@ -1243,9 +1263,6 @@ export default function WargaPage() {
           </Button>
         </DialogActions>
       </Dialog>
-
-
-
     </AdminLayout >
   );
 }

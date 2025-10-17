@@ -1,6 +1,6 @@
 // app/users/page.js
 'use client';
-import AdminLayout from '../components/AdminLayout';
+import AdminLayout from '../../components/AdminLayout';
 import {
   Typography,
   Paper,
@@ -25,11 +25,19 @@ import {
 } from '@mui/material';
 import * as React from "react";
 import { format } from 'date-fns';
-import { API_BASE_URL } from '../utils/constants';
+import { API_BASE_URL } from '../../utils/constants';
+import { redirect } from 'next/navigation';
 
 
 
-export default function SatpamPage() {
+export default function RtPage() {
+   if (typeof window !== 'undefined') {
+      const storedCode = localStorage.getItem('position_code');
+      if (storedCode !== '99') { 
+        redirect('/'); 
+        // return null;
+      }
+    }
   /**
  * Mendapatkan tanggal dan waktu saat ini dalam format yyyy-MM-dd HH:mmss
  * @returns {string} Tanggal dan jam yang sudah diformat
@@ -89,18 +97,13 @@ export default function SatpamPage() {
   //   { code: 'H', label: 'Hindu' },
   //   { code: 'B', label: 'Buddha' },
   // ];
-
-  const satpamPositionOptions = [
-    { id: 3, name: 'Kepala Security' },
-    { id: 4, name: 'Anggota Security' },
-  ];
   // var idResidentString = "";
   const [openForm, setOpenForm] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
   const [isEditMode, setIsEditMode] = React.useState(false);
 
   const initialFormData = {
-    id_resident: '',
+    id_resident:'',
     fullname: '',
     birth_date: '',
     nik_number: '',
@@ -118,7 +121,7 @@ export default function SatpamPage() {
     religion_code: '',
     last_education_code: '',
     occupation_code: '',
-    position_code: '',
+    position_code: '1', //RT
     resident_status_code: '',
     guest_status_code: '1',
     created_date: getCurrentDateTimeFormatted(),
@@ -261,7 +264,7 @@ export default function SatpamPage() {
         created_by: residentToEdit.created_by, // Pertahankan created_by asli
         // updated_by: localStorage.getItem('id_resident'), // Set updater
         // updated_date: getCurrentDateTimeFormatted(), // Set waktu update
-
+        
 
       });
       console.log('setFormData residentToEdit', residentToEdit);
@@ -364,16 +367,16 @@ export default function SatpamPage() {
       // Hapus properti created_by jika API Anda tidak membutuhkannya di mode update
       delete dataToSend.created_by;
       delete dataToSend.created_date;
-      console.log('dataToSend', dataToSend);
+      console.log('dataToSend',dataToSend);
 
     } else {
       // Mode Tambah (Insert)
       url = API_BASE_URL + '/C_resident/insert_resident';
       dataToSend = {
         ...formData,
-        residential_id: userDataString.residential_id,
-        rt: userDataString.rt,
-        rw: userDataString.rw,
+        // residential_id: userDataString.residential_id,
+        // rt: userDataString.rt,
+        // rw: userDataString.rw,
         created_by: operatorId,
         created_date: getCurrentDateTimeFormatted(),
       };
@@ -425,15 +428,14 @@ export default function SatpamPage() {
     const token = localStorage.getItem('auth_token');
 
     const dataToSend = {
-      id_resident: residentToDelete.id,
+      id_resident: residentToDelete,
     };
     const bodyData = new URLSearchParams({
       id_resident: residentToDelete.id,
     }).toString();
+    console.log("residentToDelete", residentToDelete.id)
     console.log("bodyData", bodyData)
     console.log("token", token)
-
-
 
     try {
       // const response = await fetch(url, {
@@ -455,7 +457,7 @@ export default function SatpamPage() {
 
 
       const jsonResult = await response.json();
-
+      console.log("jsonResult", jsonResult);
       if (response.ok && jsonResult.success) {
         // Berhasil dihapus, tutup dialog dan muat ulang data
         handleCloseDeleteDialog();
@@ -472,13 +474,9 @@ export default function SatpamPage() {
     }
   };
   // TAMBAH DATA FUNGSI SAMPAI SINI
-
-
-
-
   React.useEffect(() => {
     const fetchData = async () => {
-      const url = API_BASE_URL + '/C_resident/get_satpam';
+      const url = API_BASE_URL + '/C_resident/get_rt';
       const token = localStorage.getItem('auth_token');
       try {
         const response = await fetch(url, {
@@ -492,7 +490,7 @@ export default function SatpamPage() {
         if (response.ok && jsonResult.success) {
           setResidentData(jsonResult.data);
         } else {
-          setError(jsonResult.message || 'Gagal mengambil data satpam.');
+          setError(jsonResult.message || 'Gagal mengambil data RT.');
         }
       } catch (e) {
         setError('Koneksi gagal atau terjadi kesalahan jaringan.');
@@ -728,7 +726,7 @@ export default function SatpamPage() {
   return (
     <AdminLayout>
       <Typography variant="h4" gutterBottom>
-        Manajemen Data Security
+        Manajemen Data RT
       </Typography>
       <Paper elevation={3} sx={{ p: 3 }}>
 
@@ -813,7 +811,7 @@ export default function SatpamPage() {
         </TableContainer>
 
         {/* ----------------------------------- */}
-        {/* ✅ DIALOG FORM INPUT DATA SATPAM */}
+        {/* ✅ DIALOG FORM INPUT DATA RESIDENT */}
         {/* ----------------------------------- */}
         <Dialog open={openForm} onClose={handleCloseForm} fullWidth maxWidth="md">
           {/* <DialogTitle sx={{ bgcolor: '#394e77', color: 'white', padding: 2 }}>
@@ -824,7 +822,7 @@ export default function SatpamPage() {
 
           <DialogTitle sx={{ bgcolor: '#394e77', color: 'white', padding: 2 }}>
             {/* ✅ Ganti Title */}
-            {isEditMode ? 'Edit Data Security' : 'Input Data Security'}
+            {isEditMode ? 'Edit Data Resident' : 'Input Data Resident Baru'}
           </DialogTitle>
           <Box component="form" onSubmit={handleSubmitForm}>
 
@@ -910,8 +908,8 @@ export default function SatpamPage() {
                       label="Email"
                       name="email"
                       type="email"
-                      disabled={isEditMode}
                       value={formData.email}
+                      disabled={isEditMode}
                       onChange={handleInputChange}
                       // Tampilkan warna/status berdasarkan hasil pengecekan
                       error={emailCheckStatus === 'unavailable' || emailCheckStatus === 'error'}
@@ -920,7 +918,7 @@ export default function SatpamPage() {
                     <Button
                       variant="outlined"
                       onClick={handleCheckEmail}
-                      disabled={isCheckingEmail || !formData.email || isEditMode}
+                      disabled={isCheckingEmail || !formData.email ||isEditMode}
                       size="small"
                       sx={{ height: '40px', minWidth: '80px' }} // Atur tinggi agar sejajar dengan TextField
                     >
@@ -950,7 +948,7 @@ export default function SatpamPage() {
                 {/* Baris 3: ID Perumahan, No. Rumah, Total Keluarga */}
                 {/* <Grid item xs={12} sm={4}> */}
                 {/* <TextField margin="none" sx={{width: lebartextbox,}} size="small" label="ID Perumahan" name="residential_id" value={formData.residential_id} onChange={handleInputChange} required /> */}
-                {/* <TextField
+                <TextField
                     select
                     margin="none"
                     sx={{ width: lebartextbox, }}
@@ -982,32 +980,8 @@ export default function SatpamPage() {
                         {option.residential_name}
                       </MenuItem>
                     ))}
-                  </TextField> */}
-                {/* </Grid> */}
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    select // ⬅️ Ini mengubah TextField menjadi dropdown (Select)
-                    margin="none"
-                    sx={{ width: lebartextbox, }}
-                    size="small"
-                    label="Jabatan Security"
-                    name="position_code"
-                   value={formData.position_code}
-                   onChange={handleInputChange}
-                    required
-                    fullWidth // Opsional: jika ingin penuh 100% dari Grid item
-                  >
-                    {/* Loop melalui array opsi untuk membuat MenuItem */}
-                    {satpamPositionOptions.map((option) => (
-                      <MenuItem
-                        key={option.id}
-                        value={option.id} // ⬅️ Value yang disimpan adalah ID (1 atau 2)
-                      >
-                        {option.name} {/* ⬅️ Teks yang ditampilkan adalah Nama (Kepala/Anggota) */}
-                      </MenuItem>
-                    ))}
                   </TextField>
-                </Grid>
+                {/* </Grid> */}
                 <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{ width: lebartextbox, }} size="small" label="Nomor Rumah" name="house_number" value={formData.house_number} onChange={handleInputChange} required />
                 </Grid>
@@ -1016,12 +990,12 @@ export default function SatpamPage() {
                 </Grid>
 
                 {/* Baris 4: RT, RW */}
-                {/* <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{ width: lebartextbox, }} size="small" label="RT" name="rt" value={formData.rt} onChange={handleInputChange} required />
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{ width: lebartextbox, }} size="small" label="RW" name="rw" value={formData.rw} onChange={handleInputChange} required />
-                </Grid> */}
+                </Grid>
               </Grid>
 
               <Divider sx={{ my: 3 }} />
@@ -1137,7 +1111,7 @@ export default function SatpamPage() {
                     ))}
                   </TextField>
                 </Grid>
-                {/* <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={4}>
                   <TextField
                     select
                     margin="none"
@@ -1171,16 +1145,13 @@ export default function SatpamPage() {
                       </MenuItem>
                     ))}
                   </TextField>
-                </Grid> */}
+                </Grid>
                 {/* <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{width: lebartextbox,}} size="small" label="Kode Posisi" name="position_code" value={formData.position_code} onChange={handleInputChange} />
                 </Grid> */}
 
-                
-
-
                 {/* Baris 7: Status Resident, Status Tamu, Status Email */}
-                {/* <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={4}>
                   <TextField
                     select
                     margin="none"
@@ -1214,7 +1185,7 @@ export default function SatpamPage() {
                       </MenuItem>
                     ))}
                   </TextField>
-                </Grid> */}
+                </Grid>
                 {/* <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{width: lebartextbox,}} size="small" label="Kode Status Terima Tamu" name="guest_status_code" value={formData.guest_status_code} onChange={handleInputChange} required />
                 </Grid> */}
@@ -1276,9 +1247,6 @@ export default function SatpamPage() {
           </Button>
         </DialogActions>
       </Dialog>
-
-
-
     </AdminLayout >
   );
 }

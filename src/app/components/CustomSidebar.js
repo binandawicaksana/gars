@@ -5,14 +5,17 @@ import PeopleIcon from '@mui/icons-material/People';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ShieldIcon from '@mui/icons-material/Shield';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import Person4Icon from '@mui/icons-material/Person4';
+import Groups3Icon from '@mui/icons-material/Groups3';
 import Link from 'next/link';
 import HomeImage from '../assets/images/home_image2.png'; 
 
 // Data menu navigasi
 const navItems = [
   { text: 'Dashboard Warga', icon: <DashboardIcon />, href: '/' },
-  { text: 'Data Warga', icon: <PeopleAltIcon />, href: '/warga' },
-  { text: 'Data Satpam', icon: <ShieldIcon />, href: '/satpam' },
+  { text: 'Data Warga', icon: <Groups3Icon />, href: '/warga' },
+  { text: 'Data Satpam', icon: <AdminPanelSettingsIcon />, href: '/satpam' },
   // { text: 'Pengguna', icon: <PeopleIcon />, href: '/users' },
   { text: 'Pengaturan', icon: <SettingsIcon />, href: '/settings' },
 ];

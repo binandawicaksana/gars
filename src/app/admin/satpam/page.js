@@ -1,6 +1,6 @@
 // app/users/page.js
 'use client';
-import AdminLayout from '../components/AdminLayout';
+import AdminLayout from '../../components/AdminLayout';
 import {
   Typography,
   Paper,
@@ -25,7 +25,7 @@ import {
 } from '@mui/material';
 import * as React from "react";
 import { format } from 'date-fns';
-import { API_BASE_URL } from '../utils/constants';
+import { API_BASE_URL } from '../../utils/constants';
 
 
 
@@ -307,9 +307,9 @@ export default function SatpamPage() {
     // handleCheckEmail();
     const dataToSend = {
       ...formData, // Semua data dari form
-      residential_id: residentialIdString,
-      rt: rtString,
-      rw: rwString,
+      // residential_id: residentialIdString,
+      // rt: rtString,
+      // rw: rwString,
       created_by: createdByValue,
     };
 
@@ -948,9 +948,9 @@ export default function SatpamPage() {
               <Grid container spacing={3}>
 
                 {/* Baris 3: ID Perumahan, No. Rumah, Total Keluarga */}
-                {/* <Grid item xs={12} sm={4}> */}
+                <Grid item xs={12} sm={4}>
                 {/* <TextField margin="none" sx={{width: lebartextbox,}} size="small" label="ID Perumahan" name="residential_id" value={formData.residential_id} onChange={handleInputChange} required /> */}
-                {/* <TextField
+                <TextField
                     select
                     margin="none"
                     sx={{ width: lebartextbox, }}
@@ -982,8 +982,8 @@ export default function SatpamPage() {
                         {option.residential_name}
                       </MenuItem>
                     ))}
-                  </TextField> */}
-                {/* </Grid> */}
+                  </TextField>
+                </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField
                     select // ⬅️ Ini mengubah TextField menjadi dropdown (Select)
@@ -1016,12 +1016,12 @@ export default function SatpamPage() {
                 </Grid>
 
                 {/* Baris 4: RT, RW */}
-                {/* <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{ width: lebartextbox, }} size="small" label="RT" name="rt" value={formData.rt} onChange={handleInputChange} required />
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{ width: lebartextbox, }} size="small" label="RW" name="rw" value={formData.rw} onChange={handleInputChange} required />
-                </Grid> */}
+                </Grid>
               </Grid>
 
               <Divider sx={{ my: 3 }} />

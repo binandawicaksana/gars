@@ -2,8 +2,8 @@
 'use client';
 import * as React from 'react';
 import { Card, CardContent, Grid, Typography, CircularProgress, Alert, Box } from '@mui/material';
-import AdminLayout from './components/AdminLayout'; // Sesuaikan jalur impor
-import { API_BASE_URL } from './utils/constants';
+import AdminLayout from '../components/AdminLayout'; // Sesuaikan jalur impor
+import { API_BASE_URL } from '../utils/constants';
 import { redirect } from 'next/navigation';
 
 export default function DashboardPage() {
@@ -81,7 +81,7 @@ export default function DashboardPage() {
   return (
     <AdminLayout>
       <Typography variant="h4" gutterBottom>
-        <p>Halo, Selamat Datang: <strong>{userFullname || 'Pengguna'}</strong></p>
+        <p>On Progress</p>
       </Typography>
 
     </AdminLayout>

@@ -64,6 +64,10 @@ export default function LoginPage() {
         localStorage.setItem('user_data', JSON.stringify(data.data)); 
         localStorage.setItem('id_resident', data.data.id_resident); 
         localStorage.setItem('position_code', data.data.position_code); 
+        localStorage.setItem('residential_id', data.data.residential_id); 
+        localStorage.setItem('rt', data.data.rt); 
+        localStorage.setItem('rw', data.data.rw); 
+
         console.log("id_resident:", data.data.id_resident);
         router.push('/');
         } else {
