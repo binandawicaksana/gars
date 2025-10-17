@@ -548,8 +548,8 @@ export default function WargaPage() {
     const fetchGenderOptions = async () => {
       const token = localStorage.getItem('auth_token');
       // Ganti URL ini dengan endpoint API Anda untuk data gender
-      // const url = API_BASE_URL + '/C_optiondata/get_gender';
-      const url = 'http://192.168.56.1/firegars/C_optiondata/get_gender';
+      const url = API_BASE_URL + '/C_optiondata/get_gender';
+      // const url = 'http://192.168.56.1/firegars/C_optiondata/get_gender';
       // console.log('url', url);
 
       try {
