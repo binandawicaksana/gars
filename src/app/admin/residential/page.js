@@ -589,7 +589,7 @@ export default function ResidentialPage() {
 
           <DialogTitle sx={{ bgcolor: '#394e77', color: 'white', padding: 2 }}>
             {/* ✅ Ganti Title */}
-            {isEditMode ? 'Edit Data Security' : 'Input Data Security'}
+            {isEditMode ? 'Edit Data Perumahan' : 'Input Data Perumahan'}
           </DialogTitle>
           <Box component="form" onSubmit={handleSubmitForm}>
 

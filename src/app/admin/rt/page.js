@@ -822,7 +822,7 @@ export default function RtPage() {
 
           <DialogTitle sx={{ bgcolor: '#394e77', color: 'white', padding: 2 }}>
             {/* ✅ Ganti Title */}
-            {isEditMode ? 'Edit Data Resident' : 'Input Data Resident Baru'}
+            {isEditMode ? 'Edit Data RT' : 'Input Data RT Baru'}
           </DialogTitle>
           <Box component="form" onSubmit={handleSubmitForm}>
 
