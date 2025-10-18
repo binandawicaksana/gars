@@ -478,7 +478,7 @@ export default function WargaPage() {
     const fetchData = async () => {
       const token = localStorage.getItem('auth_token');
       const positioncode = localStorage.getItem('position_code');
-      const residential_id = localStorage.getItem('position_code');
+      const residential_id = localStorage.getItem('residential_id');
       const rtdata = localStorage.getItem('rt');
       const rwdata = localStorage.getItem('rw');
       let url;
