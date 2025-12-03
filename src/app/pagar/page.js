@@ -127,9 +127,12 @@ export default function ServoControl() {
 
       if (response.ok && data.success) {
         setStatus(`✅ Berhasil: ${data.message}`);
+        console.log("SUKSES GERBANG");
       } else {
         // Tangani kegagalan dari server proxy atau ESP32
         setStatus(`❌ Gagal: ${data.message || 'Respons tidak berhasil.'}`);
+        console.log("ERROR RESPONS GERBANG");
+
       }
     } catch (error) {
       console.error('Terjadi kesalahan jaringan/fetch:', error);

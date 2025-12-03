@@ -20,7 +20,7 @@ export async function GET(request) {
 
   try {
     // 2. Kirim permintaan dari server Next.js (proxy) ke ESP32
-    const espUrl = `${ipaddress}/servo/${direction}`;
+    const espUrl = `http://${ipaddress}/servo/${direction}`;
     console.log(`Menghubungi ESP32 di: ${espUrl}`);
     
     const response = await fetch(espUrl, { 
