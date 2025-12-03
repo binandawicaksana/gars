@@ -122,7 +122,9 @@ export default function ServoControl() {
     try {
       // Panggil Route Handler (API Route internal Next.js)
       // Endpoint: /api/servo?direction=kiri atau /api/servo?direction=kanan
-      const response = await fetch(`/pagar/api/servo?direction=${direction}&ip_address=${IP_ESP}`);
+      // const response = await fetch(`/pagar/api/servo?direction=${direction}&ip_address=${IP_ESP}`);
+      const response = await fetch(`http://${IP_ESP}/servo/${direction}`);
+
       const data = await response.json();
 
       if (response.ok && data.success) {
