@@ -73,12 +73,12 @@ export default function DashboardPage() {
       fetchHistoryScan(e.target.value);
     }
   };
-  
- /**
- * Mendapatkan tanggal dan waktu saat ini dalam format yyyy-MM-dd HH:mmss
- * @returns {string} Tanggal dan jam yang sudah diformat
- * @param {string} tanggalData 
- */
+
+  /**
+  * Mendapatkan tanggal dan waktu saat ini dalam format yyyy-MM-dd HH:mmss
+  * @returns {string} Tanggal dan jam yang sudah diformat
+  * @param {string} tanggalData 
+  */
   function changeFormatDate(tanggalData) {
     // const now = new Date();
     return format(tanggalData, 'dd-MM-yyyy');
@@ -146,34 +146,38 @@ export default function DashboardPage() {
       setLoading(false);
     }
   };
-  
-      const fetchResidentialIdOptions = async () => {
-        const token = localStorage.getItem('auth_token');
-        // Ganti URL ini dengan endpoint API Anda untuk data gender
-        const url = API_BASE_URL + '/C_optiondata/get_residential';
-  
-        try {
-          const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              // 'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-  
-          const jsonResult = await response.json();
-  
-          if (response.ok && jsonResult.success) {
-            setresidentialIdOptions(jsonResult.data);
-          } else {
-            console.error("Gagal memuat Resident ID options:", jsonResult.message);
-          }
-        } catch (e) {
-          console.error("Network Error saat memuat Resident ID options:", e);
-        } finally {
-          setLoadingresidentialId(false);
+
+  const fetchResidentialIdOptions = async () => {
+    const token = localStorage.getItem('auth_token');
+    // Ganti URL ini dengan endpoint API Anda untuk data gender
+    const url = API_BASE_URL + '/C_optiondata/get_residential';
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          // 'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const jsonResult = await response.json();
+
+      if (response.ok && jsonResult.success) {
+        setresidentialIdOptions(jsonResult.data);
+      } else {
+        if (jsonResult.message == "Token kedaluwarsa. Silakan login kembali.") {
+          redirect('/login');
         }
-      };
+        console.error("Gagal memuat Resident ID options:", jsonResult.message);
+        console.log(jsonResult.message);
+      }
+    } catch (e) {
+      console.error("Network Error saat memuat Resident ID options:", e);
+    } finally {
+      setLoadingresidentialId(false);
+    }
+  };
 
 
 
@@ -181,6 +185,7 @@ export default function DashboardPage() {
     // Karena localStorage hanya tersedia di sisi client (browser), 
     // pastikan Anda memanggilnya di dalam useEffect atau di kondisi is client side.
     const userDataString = JSON.parse(localStorage.getItem('user_data'));
+    console.log("USERDATA",userDataString);
     const residentialIdString = userDataString.residential_id;
     const fullname = getFullName();
     if (fullname) {
@@ -203,6 +208,8 @@ export default function DashboardPage() {
         const jsonResult = await response.json();
         if (response.ok && jsonResult.success) {
           // setresidentialIdOptions(jsonResult.data);
+          console.log("OK");
+
         } else {
           // console.error("Gagal memuat Resident ID options:", jsonResult.message);
           redirect('/login');
@@ -213,18 +220,18 @@ export default function DashboardPage() {
         setLoadingDashboard(false);
       }
     };
-    
+
 
     fetchToken();
     fetchResidentialIdOptions();
     // console.error("residentialIdString", residentialIdString);
 
-    if (residentialIdString!=0){
+    if (residentialIdString != 0) {
       fetchHistoryScan(residentialIdString);
       setresidentialCombobox(false);
     }
     // console.error("residentialCombobox", residentialCombobox);
-    
+
   }, []);
 
   // 3. Tampilkan data yang sudah dimuat
@@ -234,54 +241,54 @@ export default function DashboardPage() {
         <p>Halo, Selamat Datang: <strong>{userFullname || 'Pengguna'}</strong></p>
       </Typography>
       <Paper elevation={3} sx={{ p: 3 }}>
-         <Typography variant="h6" gutterBottom mb={2}>
-        <p>Data Tamu yang telah di scan</p>
-      </Typography>
-      <Typography variant="h6" gutterBottom mb={2}>
-        {residentialCombobox}
-      </Typography>
+        <Typography variant="h6" gutterBottom mb={2}>
+          <p>Data Tamu yang telah di scan</p>
+        </Typography>
+        <Typography variant="h6" gutterBottom mb={2}>
+          {residentialCombobox}
+        </Typography>
         <Box display="flex" alignItems="center" mb={2}>
-          
+
           {residentialCombobox &&
-          <Grid item xs={12} sm={4}>
-            
-            <TextField
-              select
-              margin="none"
-              sx={{ width: lebartextbox, }}
-              size="small"
-              label="Nama Perumahan"
-              name="residential_id"
-              value={formData.residential_id}
-              onChange={handleInputChange}
-              required
-              disabled={loadingresidentialId}
-              
-              slotProps={{
-                select: { // Target komponen <Select> internal
-                  MenuProps: { // Target komponen <Menu> internal
-                    PaperProps: {
-                      style: {
-                        maxHeight: 200, // Batasi tinggi dropdown
+            <Grid item xs={12} sm={4}>
+
+              <TextField
+                select
+                margin="none"
+                sx={{ width: lebartextbox, }}
+                size="small"
+                label="Nama Perumahan"
+                name="residential_id"
+                value={formData.residential_id}
+                onChange={handleInputChange}
+                required
+                disabled={loadingresidentialId}
+
+                slotProps={{
+                  select: { // Target komponen <Select> internal
+                    MenuProps: { // Target komponen <Menu> internal
+                      PaperProps: {
+                        style: {
+                          maxHeight: 200, // Batasi tinggi dropdown
+                        },
                       },
                     },
                   },
-                },
-              }}
-            >
-              {loadingresidentialId && <MenuItem disabled>Memuat Nama Perumahan...</MenuItem>}
-              {residentialIdOptions.map((option) => (
-                <MenuItem
-                  key={option.residential_id}
-                  value={option.residential_id}
-                >
-                  {option.residential_name}
-                </MenuItem>
-              ))}
-            </TextField>
-            
-            
-          </Grid>}
+                }}
+              >
+                {loadingresidentialId && <MenuItem disabled>Memuat Nama Perumahan...</MenuItem>}
+                {residentialIdOptions.map((option) => (
+                  <MenuItem
+                    key={option.residential_id}
+                    value={option.residential_id}
+                  >
+                    {option.residential_name}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+
+            </Grid>}
 
         </Box>
         <TableContainer component={Paper} sx={{ mt: 3 }}>
@@ -300,7 +307,7 @@ export default function DashboardPage() {
             </TableHead>
             <TableBody>
               {residentData.map((user, index) => (
-              // {filteredResidents.map((user, index) => (
+                // {filteredResidents.map((user, index) => (
                 <TableRow
                   key={user.id_guest}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

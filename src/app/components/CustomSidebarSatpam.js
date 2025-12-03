@@ -6,27 +6,23 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ShieldIcon from '@mui/icons-material/Shield';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import Groups3Icon from '@mui/icons-material/Groups3';
 import Person4Icon from '@mui/icons-material/Person4';
-import LockPersonIcon from '@mui/icons-material/LockPerson';
-import AddHomeWorkIcon from '@mui/icons-material/AddHomeWork';
+import Groups3Icon from '@mui/icons-material/Groups3';
+import FenceIcon from '@mui/icons-material/Fence';
 import Link from 'next/link';
 import HomeImage from '../assets/images/home_image2.png'; 
 
 // Data menu navigasi
 const navItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, href: '/' },
-  { text: 'Data Perumahan', icon: <AddHomeWorkIcon />, href: '/admin/residential' },
-  { text: 'Data RT', icon: <Person4Icon />, href: '/admin/rt' },
-  { text: 'Data Warga', icon: <Groups3Icon />, href: '/warga' },
-  { text: 'Data Satpam', icon: <AdminPanelSettingsIcon />, href: '/admin/satpam' },
-  { text: 'Data Pengguna', icon: <LockPersonIcon />, href: '/admin/users' },
-  { text: 'Gerbang', icon: <LockPersonIcon />, href: '/admin/pagar' },
-
+  { text: 'Dashboard Satpam', icon: <DashboardIcon />, href: '/' },
+  // { text: 'Data Warga', icon: <Groups3Icon />, href: '/warga' },
+  // { text: 'Data Satpam', icon: <AdminPanelSettingsIcon />, href: '/satpam' },
+  { text: 'Gerbang', icon: <FenceIcon />, href: '/pagar' },
+  // { text: 'Pengguna', icon: <PeopleIcon />, href: '/users' },
   // { text: 'Pengaturan', icon: <SettingsIcon />, href: '/settings' },
 ];
 
-export default function CustomSidebarAdmin({ drawerWidth, mobileOpen, handleDrawerToggle }) {
+export default function CustomSidebarSatpam({ drawerWidth, mobileOpen, handleDrawerToggle }) {
   const drawerContent = (
     <div>
       <Toolbar>
@@ -38,7 +34,7 @@ export default function CustomSidebarAdmin({ drawerWidth, mobileOpen, handleDraw
             {/* 1. Tambahkan Tag Gambar */}
             {/* Pastikan 'logo-gars.png' ada di folder public Anda */}
             <img 
-                // src="images/home_image.png" 
+                // src="/images/home_image.png" 
                 src={HomeImage.src} 
                 alt="GARS Logo" 
                 style={{ 

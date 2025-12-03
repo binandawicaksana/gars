@@ -8,6 +8,7 @@ import ShieldIcon from '@mui/icons-material/Shield';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import Person4Icon from '@mui/icons-material/Person4';
 import Groups3Icon from '@mui/icons-material/Groups3';
+import FenceIcon from '@mui/icons-material/Fence';
 import Link from 'next/link';
 import HomeImage from '../assets/images/home_image2.png'; 
 
@@ -16,6 +17,7 @@ const navItems = [
   { text: 'Dashboard Warga', icon: <DashboardIcon />, href: '/' },
   { text: 'Data Warga', icon: <Groups3Icon />, href: '/warga' },
   { text: 'Data Satpam', icon: <AdminPanelSettingsIcon />, href: '/satpam' },
+  // { text: 'Gerbang', icon: <FenceIcon />, href: '/pagar' },
   // { text: 'Pengguna', icon: <PeopleIcon />, href: '/users' },
   // { text: 'Pengaturan', icon: <SettingsIcon />, href: '/settings' },
 ];

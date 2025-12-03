@@ -472,243 +472,242 @@ export default function WargaPage() {
   // TAMBAH DATA FUNGSI SAMPAI SINI
 
 
+  const fetchData = async () => {
+    const token = localStorage.getItem('auth_token');
+    const positioncode = localStorage.getItem('position_code');
+    const residential_id = localStorage.getItem('residential_id');
+    const rtdata = localStorage.getItem('rt');
+    const rwdata = localStorage.getItem('rw');
+    let url;
 
+    if (positioncode === '99') {
+      url = API_BASE_URL + '/C_resident/get_resident';
+    } else {
+      url = API_BASE_URL + '/C_resident/get_resident_rt';
+    }
+    try {
+      const bodyData = new URLSearchParams({
+        residential_id: residential_id,
+        rt: rtdata,
+        rw: rwdata
+      }).toString();
+      console.log('URL', url);
+      console.log('bodyData', bodyData);
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: bodyData,
+        //  body: JSON.stringify({ residential_id: residential_id,  rt: rtdata,  rw: rwdata}),
+      });
+      const jsonResult = await response.json();
+      if (response.ok && jsonResult.success) {
+        setResidentData(jsonResult.data);
+      } else {
+        setError(jsonResult.message || 'Gagal mengambil data resident.');
+      }
+    } catch (e) {
+      setError('Koneksi gagal atau terjadi kesalahan jaringan.');
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchResidentialIdOptions = async () => {
+    const token = localStorage.getItem('auth_token');
+    // Ganti URL ini dengan endpoint API Anda untuk data gender
+    const url = API_BASE_URL + '/C_optiondata/get_residential';
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          // 'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const jsonResult = await response.json();
+
+      if (response.ok && jsonResult.success) {
+        setresidentialIdOptions(jsonResult.data);
+      } else {
+        console.error("Gagal memuat Resident ID options:", jsonResult.message);
+      }
+    } catch (e) {
+      console.error("Network Error saat memuat Resident ID options:", e);
+    } finally {
+      setLoadingresidentialId(false);
+    }
+  };
+  const fetchGenderOptions = async () => {
+    const token = localStorage.getItem('auth_token');
+    // Ganti URL ini dengan endpoint API Anda untuk data gender
+    const url = API_BASE_URL + '/C_optiondata/get_gender';
+    // const url = 'http://192.168.56.1/firegars/C_optiondata/get_gender';
+    // console.log('url', url);
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const jsonResult = await response.json();
+
+      if (response.ok && jsonResult.success) {
+        setGenderOptions(jsonResult.data);
+      } else {
+        console.error("Gagal memuat gender options:", jsonResult.message);
+      }
+    } catch (e) {
+      console.error("Network Error saat memuat gender options:", e);
+    } finally {
+      setLoadingGender(false);
+    }
+  };
+  const fetchMaritalStatusOptions = async () => {
+    const token = localStorage.getItem('auth_token');
+    // Ganti URL ini dengan endpoint API Anda untuk data gender
+    const url = API_BASE_URL + '/C_optiondata/get_marital_status';
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const jsonResult = await response.json();
+
+      if (response.ok && jsonResult.success) {
+        setmartialStatusOptions(jsonResult.data);
+      } else {
+        console.error("Gagal memuat MaritalStatus options:", jsonResult.message);
+      }
+    } catch (e) {
+      console.error("Network Error saat memuat MaritalStatus options:", e);
+    } finally {
+      setLoadingmartialStatus(false);
+    }
+  };
+  const fetchReligionOptions = async () => {
+    const token = localStorage.getItem('auth_token');
+    // Ganti URL ini dengan endpoint API Anda untuk data gender
+    const url = API_BASE_URL + '/C_optiondata/get_religion';
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const jsonResult = await response.json();
+
+      if (response.ok && jsonResult.success) {
+        setreligionOptions(jsonResult.data);
+      } else {
+        console.error("Gagal memuat Religion options:", jsonResult.message);
+      }
+    } catch (e) {
+      console.error("Network Error saat memuat Religion options:", e);
+    } finally {
+      setLoadingreligion(false);
+    }
+  };
+  const fetchLastEducationOptions = async () => {
+    const token = localStorage.getItem('auth_token');
+    // Ganti URL ini dengan endpoint API Anda untuk data gender
+    const url = API_BASE_URL + '/C_optiondata/get_last_education';
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const jsonResult = await response.json();
+
+      if (response.ok && jsonResult.success) {
+        setlastEducationOptions(jsonResult.data);
+      } else {
+        console.error("Gagal memuat LastEducation options:", jsonResult.message);
+      }
+    } catch (e) {
+      console.error("Network Error saat memuat LastEducation options:", e);
+    } finally {
+      setLoadinglastEducation(false);
+    }
+  };
+  const fetchOccupationOptions = async () => {
+    const token = localStorage.getItem('auth_token');
+    // Ganti URL ini dengan endpoint API Anda untuk data gender
+    const url = API_BASE_URL + '/C_optiondata/get_occupation';
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const jsonResult = await response.json();
+
+      if (response.ok && jsonResult.success) {
+        setoccupationOptions(jsonResult.data);
+      } else {
+        console.error("Gagal memuat Occupation options:", jsonResult.message);
+      }
+    } catch (e) {
+      console.error("Network Error saat memuat Occupation options:", e);
+    } finally {
+      setLoadingoccupation(false);
+    }
+  };
+  const fetchResidentStatusOptions = async () => {
+    const token = localStorage.getItem('auth_token');
+    // Ganti URL ini dengan endpoint API Anda untuk data gender
+    const url = API_BASE_URL + '/C_optiondata/get_resident_status';
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const jsonResult = await response.json();
+
+      if (response.ok && jsonResult.success) {
+        setresidentStatusOptions(jsonResult.data);
+      } else {
+        console.error("Gagal memuat ResidentStatus options:", jsonResult.message);
+      }
+    } catch (e) {
+      console.error("Network Error saat memuat ResidentStatus options:", e);
+    } finally {
+      setLoadingresidentStatus(false);
+    }
+  };
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem('auth_token');
-      const positioncode = localStorage.getItem('position_code');
-      const residential_id = localStorage.getItem('residential_id');
-      const rtdata = localStorage.getItem('rt');
-      const rwdata = localStorage.getItem('rw');
-      let url;
-
-      if (positioncode === '99') {
-        url = API_BASE_URL + '/C_resident/get_resident';
-      } else {
-        url = API_BASE_URL + '/C_resident/get_resident_rt';
-      }
-      try {
-        const bodyData = new URLSearchParams({
-          residential_id: residential_id,
-          rt: rtdata,
-          rw: rwdata
-        }).toString();
-        console.log('URL', url);
-        console.log('bodyData', bodyData);
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: bodyData,
-          //  body: JSON.stringify({ residential_id: residential_id,  rt: rtdata,  rw: rwdata}),
-        });
-        const jsonResult = await response.json();
-        if (response.ok && jsonResult.success) {
-          setResidentData(jsonResult.data);
-        } else {
-          setError(jsonResult.message || 'Gagal mengambil data resident.');
-        }
-      } catch (e) {
-        setError('Koneksi gagal atau terjadi kesalahan jaringan.');
-        console.log(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    const fetchResidentialIdOptions = async () => {
-      const token = localStorage.getItem('auth_token');
-      // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = API_BASE_URL + '/C_optiondata/get_residential';
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            // 'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        const jsonResult = await response.json();
-
-        if (response.ok && jsonResult.success) {
-          setresidentialIdOptions(jsonResult.data);
-        } else {
-          console.error("Gagal memuat Resident ID options:", jsonResult.message);
-        }
-      } catch (e) {
-        console.error("Network Error saat memuat Resident ID options:", e);
-      } finally {
-        setLoadingresidentialId(false);
-      }
-    };
-    const fetchGenderOptions = async () => {
-      const token = localStorage.getItem('auth_token');
-      // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = API_BASE_URL + '/C_optiondata/get_gender';
-      // const url = 'http://192.168.56.1/firegars/C_optiondata/get_gender';
-      // console.log('url', url);
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        const jsonResult = await response.json();
-
-        if (response.ok && jsonResult.success) {
-          setGenderOptions(jsonResult.data);
-        } else {
-          console.error("Gagal memuat gender options:", jsonResult.message);
-        }
-      } catch (e) {
-        console.error("Network Error saat memuat gender options:", e);
-      } finally {
-        setLoadingGender(false);
-      }
-    };
-    const fetchMaritalStatusOptions = async () => {
-      const token = localStorage.getItem('auth_token');
-      // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = API_BASE_URL + '/C_optiondata/get_marital_status';
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        const jsonResult = await response.json();
-
-        if (response.ok && jsonResult.success) {
-          setmartialStatusOptions(jsonResult.data);
-        } else {
-          console.error("Gagal memuat MaritalStatus options:", jsonResult.message);
-        }
-      } catch (e) {
-        console.error("Network Error saat memuat MaritalStatus options:", e);
-      } finally {
-        setLoadingmartialStatus(false);
-      }
-    };
-    const fetchReligionOptions = async () => {
-      const token = localStorage.getItem('auth_token');
-      // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = API_BASE_URL + '/C_optiondata/get_religion';
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        const jsonResult = await response.json();
-
-        if (response.ok && jsonResult.success) {
-          setreligionOptions(jsonResult.data);
-        } else {
-          console.error("Gagal memuat Religion options:", jsonResult.message);
-        }
-      } catch (e) {
-        console.error("Network Error saat memuat Religion options:", e);
-      } finally {
-        setLoadingreligion(false);
-      }
-    };
-    const fetchLastEducationOptions = async () => {
-      const token = localStorage.getItem('auth_token');
-      // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = API_BASE_URL + '/C_optiondata/get_last_education';
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        const jsonResult = await response.json();
-
-        if (response.ok && jsonResult.success) {
-          setlastEducationOptions(jsonResult.data);
-        } else {
-          console.error("Gagal memuat LastEducation options:", jsonResult.message);
-        }
-      } catch (e) {
-        console.error("Network Error saat memuat LastEducation options:", e);
-      } finally {
-        setLoadinglastEducation(false);
-      }
-    };
-    const fetchOccupationOptions = async () => {
-      const token = localStorage.getItem('auth_token');
-      // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = API_BASE_URL + '/C_optiondata/get_occupation';
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        const jsonResult = await response.json();
-
-        if (response.ok && jsonResult.success) {
-          setoccupationOptions(jsonResult.data);
-        } else {
-          console.error("Gagal memuat Occupation options:", jsonResult.message);
-        }
-      } catch (e) {
-        console.error("Network Error saat memuat Occupation options:", e);
-      } finally {
-        setLoadingoccupation(false);
-      }
-    };
-    const fetchResidentStatusOptions = async () => {
-      const token = localStorage.getItem('auth_token');
-      // Ganti URL ini dengan endpoint API Anda untuk data gender
-      const url = API_BASE_URL + '/C_optiondata/get_resident_status';
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        const jsonResult = await response.json();
-
-        if (response.ok && jsonResult.success) {
-          setresidentStatusOptions(jsonResult.data);
-        } else {
-          console.error("Gagal memuat ResidentStatus options:", jsonResult.message);
-        }
-      } catch (e) {
-        console.error("Network Error saat memuat ResidentStatus options:", e);
-      } finally {
-        setLoadingresidentStatus(false);
-      }
-    };
     fetchData();
     fetchResidentialIdOptions();
     fetchGenderOptions();

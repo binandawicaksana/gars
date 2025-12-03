@@ -6,6 +6,8 @@ import { Box, CssBaseline } from '@mui/material';
 import CustomAppBar from './CustomAppBar'; // Akan kita buat di langkah 2
 import CustomSidebar from './CustomSidebar'; // Akan kita buat di langkah 3
 import CustomSidebarAdmin from './CustomSidebarAdmin'; // Akan kita buat di langkah 3
+import CustomSidebarSatpam from './CustomSidebarSatpam'; // Akan kita buat di langkah 3
+
 
 
 // Konstanta lebar sidebar
@@ -63,22 +65,28 @@ export default function AdminLayout({ children }) {
         mobileOpen={mobileOpen}
         handleDrawerToggle={handleDrawerToggle}
       /> */}
-       {userPosition === '99' ? (
-                // Tampilkan CustomSidebar jika posisi = 1
-                <CustomSidebarAdmin 
-                    drawerWidth={drawerWidth}
-                    mobileOpen={mobileOpen}
-                    handleDrawerToggle={handleDrawerToggle}
-                />
-            ) : (
-               <CustomSidebar 
-                    drawerWidth={drawerWidth}
-                    mobileOpen={mobileOpen}
-                    handleDrawerToggle={handleDrawerToggle}
-                />
-                // Tampilkan CustomSidebarAdmin jika posisi = 2
-               
-            )}
+      {userPosition === '99' ? (
+    // JIKA POSISI ADALAH ADMIN ('99')
+    <CustomSidebarAdmin 
+        drawerWidth={drawerWidth}
+        mobileOpen={mobileOpen}
+        handleDrawerToggle={handleDrawerToggle}
+    />
+) : userPosition === '3' || userPosition === '4' ? (
+    // JIKA POSISI ADALAH SATPAM ('3' atau '4')
+    <CustomSidebarSatpam // ✅ Panggil komponen Sidebar Satpam yang baru
+        drawerWidth={drawerWidth}
+        mobileOpen={mobileOpen}
+        handleDrawerToggle={handleDrawerToggle}
+    />
+) : (
+    // JIKA POSISI ADALAH DEFAULT/LAINNYA (misalnya Warga)
+    <CustomSidebar 
+        drawerWidth={drawerWidth}
+        mobileOpen={mobileOpen}
+        handleDrawerToggle={handleDrawerToggle}
+    />
+)}
       
       {/* 3. Konten Utama */}
       <Box

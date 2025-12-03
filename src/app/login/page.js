@@ -37,6 +37,8 @@ export default function LoginPage() {
     }).toString();
     // const bodyData = `username=${username}&password=${hashedPassword}`;
     const url = API_BASE_URL + '/C_user/login';
+      console.log("bodyData: ", bodyData);
+
 
     try {
       const response = await fetch(url, {
@@ -54,7 +56,10 @@ export default function LoginPage() {
       if (response.ok && data.success) {
         console.log("position_code:",data.data.position_code);
         console.log("Respon Data:",data);
-        if (data.data.position_code==99||data.data.position_code==1){
+        const posisiCode = data.data.position_code;
+        // if (data.data.position_code==99||data.data.position_code==1){
+        if (posisiCode != 2){
+
         Cookies.set('auth_token', data.token, {
           expires: 7,
           secure: process.env.NODE_ENV === 'production',
