@@ -1008,12 +1008,12 @@ export default function SatpamPage() {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                {/* <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{ width: lebartextbox, }} size="small" label="Nomor Rumah" name="house_number" value={formData.house_number} onChange={handleInputChange} required />
-                </Grid>
-                <Grid item xs={12} sm={4}>
+                </Grid> */}
+                {/* <Grid item xs={12} sm={4}>
                   <TextField margin="none" sx={{ width: lebartextbox, }} size="small" label="Total Keluarga" name="total_family" value={formData.total_family} onChange={handleInputChange} type="number" required />
-                </Grid>
+                </Grid> */}
 
                 {/* Baris 4: RT, RW */}
                 {/* <Grid item xs={12} sm={4}>

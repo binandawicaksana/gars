@@ -14,7 +14,7 @@ import HomeImage from '../assets/images/home_image2.png';
 
 // Data menu navigasi
 const navItems = [
-  { text: 'Dashboard Warga', icon: <DashboardIcon />, href: '/' },
+  { text: 'Dashboard', icon: <DashboardIcon />, href: '/' },
   { text: 'Data Warga', icon: <Groups3Icon />, href: '/warga' },
   { text: 'Data Satpam', icon: <AdminPanelSettingsIcon />, href: '/satpam' },
   // { text: 'Gerbang', icon: <FenceIcon />, href: '/pagar' },
